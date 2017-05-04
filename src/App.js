@@ -13,16 +13,6 @@ class App extends Component {
     };
   }
 
-  // componentDidMount(){ //this logs the user in on refresh
-  //   var authHandler = (error, data) => {
-  //     console.log(data.user);
-  //     this.setState({
-  //       user: data.user
-  //     })
-  //   }
-  //   //taken from documentation
-  //   base.authWithOAuthPopup('google', authHandler);
-  // }
 
   logout(){
     base.unauth()
@@ -39,7 +29,8 @@ class App extends Component {
         user: data.user,
         login: true
       })
-      this.listIfLoggedIn();
+      this.projectsIfloggedIn();
+      this.usersIfLoggedIn();
     }
     base.authWithOAuthPopup('google', authHandler);
   }
@@ -47,9 +38,9 @@ class App extends Component {
 
   loginOrLogoutButton(){
     if(this.state.login) {
-      return <button onClick={this.logout.bind(this)}>Logout</button>
+      return <button className="waves-effect waves-light btn" onClick={this.logout.bind(this)}>Logout</button>
     } else{
-      return <button onClick={this.login.bind(this)}>Login</button>
+      return <button className="waves-effect waves-light btn" onClick={this.login.bind(this)}>Login</button>
     }
   }
 
@@ -67,31 +58,29 @@ class App extends Component {
   }
 
 
-
   formIfLoggedIn(){
     if(this.state.login) {
       return (
-        <div>
-        <form onSubmit={this.addProjectToFirebase.bind(this)}>
-          <input
-            placeholder="Add Github Projects"
-            ref={element => this.projectName = element}/>
-          <button>Add Project to Firebase</button>
-        </form>
-        <form onSubmit={this.addUsertoFirebase.bind(this)}>
-          <input
-            placeholder="Add Github Users"
-            ref={element => this.gitName = element}/>
-          <button>Add User to Firebase</button>
-        </form>
-      </div>
+        <div className="row">
+          <form className="col s6" onSubmit={this.addProjectToFirebase.bind(this)}>
+            <input
+              placeholder="Add Github Projects to Firebase"
+              ref={element => this.projectName = element}/>
+            <button className="btn-floating btn-large waves-effect waves-light red">Add Project to Firebase</button>
+          </form>
+          <form className="col s6" onSubmit={this.addUsertoFirebase.bind(this)}>
+            <input
+              placeholder="Add Github Users to Firebase"
+              ref={element => this.gitName = element}/>
+            <button className="btn-floating btn-large waves-effect waves-light red">Add User to Firebase</button>
+          </form>
+        </div>
        )
     }
   }
 
 
-
-  listIfLoggedIn() {
+  usersIfLoggedIn() {
     if(this.state.login) {
       base.fetch(`/users/${this.state.user.uid}/users`, {context: this, asArray: true} )
       .then(data => {
@@ -101,28 +90,47 @@ class App extends Component {
     }
   }
 
+  projectsIfloggedIn() {
+    if(this.state.login) {
+      base.fetch(`/users/${this.state.user.uid}/projects`, {context: this, asArray: true})
+      .then(data => {
+        this.setState ({
+        projectData: data
+      })});
+    }
+  }
 
-  printUsers(){
-    if (this.state.userData) {
+
+  printLists(){
+    if (this.state.projectData && this.state.userData) {
       return (
-        <div>
-        {this.state.userData.map((arr,index) => {
-          return (
-          <li key={index}>{arr}</li>
-        )}
-      )}
+        <div className="row">
+          <div className="col s6"><h4>Projects</h4>
+            {this.state.projectData.map((arr,index) => {
+              return (
+                <li key={index}>{arr}</li>
+              )}
+            )}
+          </div>
+          <div className="col s6"><h4>Users</h4>
+            {this.state.userData.map((arr,index) => {
+              return (
+                <li key={index}>{arr}</li>
+              )}
+            )}
+        </div>
       </div>
       )
     }
   }
 
-
   render() {
     return (
-      <div className="App">
+      <div className="container">
           {this.loginOrLogoutButton()}
+          <br />
           {this.formIfLoggedIn()}
-          {this.printUsers()}
+          {this.printLists()}
       </div>
     );
   }
