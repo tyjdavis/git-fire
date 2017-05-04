@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import axios from 'axios';
+import ProjectSearchResult from './projectSearchResult';
 import base from './rebase';
 import './App.css';
 
@@ -6,131 +8,126 @@ window.base = base;
 
 class App extends Component {
 
-  constructor (){
+  constructor () {
     super();
     this.state = {
-      user: {} //initializing state at the start. Typically will be an EMPTY object or string
-    };
+      user: {},
+      searchResults: {},
+      users: [],
+      projects: []
+    }
   }
 
+  componentDidMount () {
+    // whenever user logs in or out, run setUserState
+    base.onAuth(this.setUserState.bind(this));
+  }
 
-  logout(){
-    base.unauth()
+  setUserState (user) {
     this.setState({
-      user:{},
-      login: false
-    })
-  } //you can check to see if you are logged out by typing base.auth().currentUser into console. should return null
-
-
-  login(){
-    var authHandler = (error, data) => {
-      this.setState({
-        user: data.user,
-        login: true
-      })
-      this.projectsIfloggedIn();
-      this.usersIfLoggedIn();
-    }
-    base.authWithOAuthPopup('google', authHandler);
-  }
-
-
-  loginOrLogoutButton(){
-    if(this.state.login) {
-      return <button className="waves-effect waves-light btn" onClick={this.logout.bind(this)}>Logout</button>
-    } else{
-      return <button className="waves-effect waves-light btn" onClick={this.login.bind(this)}>Login</button>
+      user: user || {}
+    });
+    if (user) {
+      this.offSwitchForProjects = base.syncState(`users/${user.uid}/projects`, {
+        context: this,
+        asArray: true,
+        state: 'projects'
+      });
+      this.offSwitchForUsers = base.syncState(`users/${user.uid}/users`, {
+        context: this,
+        asArray: true,
+        state: 'users'
+      });
     }
   }
 
+  componentWillUnmount () {
+    base.removeBinding(this.offSwitchForUsers);
+    base.removeBinding(this.offSwitchForProjects);
+  }
 
-  addProjectToFirebase(event){
+  login () {
+    base.authWithOAuthPopup('github', function (){});
+  }
+
+  logout () {
+    base.unauth()
+  }
+
+  loginOrLogoutButton () {
+    if (this.state.user.uid) {
+      return <button onClick={this.logout.bind(this)}>Logout</button>
+    } else {
+      return <button onClick={this.login.bind(this)}>Login</button>
+    }
+  }
+
+  searchGithubProjects (event) {
     event.preventDefault();
-    const project = this.projectName.value; //refering to the ref input element in formIfLoggedIn
-    base.push(`/users/${this.state.user.uid}/projects`, { data: project }) //first argument is destination ie endpoint
+    const project = this.projectName.value;
+    axios.get(`https://api.github.com/search/repositories?q=${project}`).then(response => this.setState({ searchResults: response.data }));
+    this.projectName.value = '';
+    //base.push(`/users/${this.state.user.uid}/projects`,
+    //{ data: { name: project }})
   }
 
-  addUsertoFirebase(event){
-    event.preventDefault();
-    const gitUser = this.gitName.value;
-    base.push(`/users/${this.state.user.uid}/users`, { data: gitUser })
-  }
-
-
-  formIfLoggedIn(){
-    if(this.state.login) {
+  formIfLoggedIn () {
+    if (this.state.user.uid) {
       return (
-        <div className="row">
-          <form className="col s6" onSubmit={this.addProjectToFirebase.bind(this)}>
-            <input
-              placeholder="Add Github Projects to Firebase"
-              ref={element => this.projectName = element}/>
-            <button className="btn-floating btn-large waves-effect waves-light red">Add Project to Firebase</button>
-          </form>
-          <form className="col s6" onSubmit={this.addUsertoFirebase.bind(this)}>
-            <input
-              placeholder="Add Github Users to Firebase"
-              ref={element => this.gitName = element}/>
-            <button className="btn-floating btn-large waves-effect waves-light red">Add User to Firebase</button>
-          </form>
-        </div>
-       )
-    }
-  }
-
-
-  usersIfLoggedIn() {
-    if(this.state.login) {
-      base.fetch(`/users/${this.state.user.uid}/users`, {context: this, asArray: true} )
-      .then(data => {
-        this.setState ({
-        userData: data
-      })});
-    }
-  }
-
-  projectsIfloggedIn() {
-    if(this.state.login) {
-      base.fetch(`/users/${this.state.user.uid}/projects`, {context: this, asArray: true})
-      .then(data => {
-        this.setState ({
-        projectData: data
-      })});
-    }
-  }
-
-
-  printLists(){
-    if (this.state.projectData && this.state.userData) {
-      return (
-        <div className="row">
-          <div className="col s6"><h4>Projects</h4>
-            {this.state.projectData.map((arr,index) => {
-              return (
-                <li key={index}>{arr}</li>
-              )}
-            )}
-          </div>
-          <div className="col s6"><h4>Users</h4>
-            {this.state.userData.map((arr,index) => {
-              return (
-                <li key={index}>{arr}</li>
-              )}
-            )}
-        </div>
-      </div>
+        <form onSubmit={this.searchGithubProjects.bind(this)}>
+          <input
+            placeholder='Favorite GitHub Projects'
+            ref={element => this.projectName = element} />
+          <button>Search GitHub Repos</button>
+        </form>
       )
     }
   }
+
+  displaySearchResults () {
+    if (this.state.searchResults.items) {
+      const results = this.state.searchResults;
+      const projectIds = this.state.projects.map(p => p.id);
+      return (
+        <div>
+          <h3>{results.total_count} Results</h3>
+          <ul>
+            {results.items.map((project, index) => {
+              return <ProjectSearchResult key={index} project={project}
+              alreadyInFirebase={projectIds.includes(project.id)}
+              addProject={this.addProject.bind(this)}
+              removeProject={this.removeProject.bind(this)} />
+            }
+            )}
+          </ul>
+        </div>
+      )
+    }
+  }
+
+  addProject(project){
+    const projectData = {name: project.name, id: project.id}
+      this.setState({
+        projects: this.state.projects.concat(projectData)
+      })
+  }
+
+
+  removeProject(project){
+    let projectId = project.id
+    let projectData = this.state.projects
+
+    this.setState ({
+      projects: projectData.filter(object => object.id !== projectId)
+    })}
+
 
   render() {
     return (
       <div className="container">
           {this.loginOrLogoutButton()}
-          <br />
-          {this.formIfLoggedIn()}
-          {this.printLists()}
+        {this.formIfLoggedIn()}
+        {this.displaySearchResults()}
       </div>
     );
   }
