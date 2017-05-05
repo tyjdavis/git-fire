@@ -13,9 +13,9 @@ class ProjectSearchResult extends Component {
 
   addOrRemoveButton(project){
     if (this.props.alreadyInFirebase){
-      return <button onClick={this.handleClick.bind(this, project)}>Remove from Firebase</button>
+      return <button className="waves-effect waves-light btn" onClick={this.handleClick.bind(this, project)}>Remove from Firebase</button>
     } else {
-      return <button onClick={this.handleClick.bind(this, project)}>Add to Firebase</button>
+      return <button className="waves-effect waves-light btn" onClick={this.handleClick.bind(this, project)}>Add to Firebase</button>
     }
   }
 
@@ -23,13 +23,13 @@ class ProjectSearchResult extends Component {
     const project = this.props.project;
     return (
       <li className="section">
-        <strong>Name: {project.name}</strong>
-        <p><strong>Description:</strong> {project.description}</p>
-        <a href={project.html_url}><strong>URL:</strong> {project.html_url}</a>
-        <p><strong>Stars:</strong> {project.stargazers_count}</p>
-        <img className="responsive-img" src={project.owner.avatar_url}/>
+        <h5><strong>Name:</strong> {project.name}</h5>
         <br />
-        {this.addOrRemoveButton(project)}
+        <img className="responsive-img" src={project.owner.avatar_url}/>
+        <p><strong>Description:</strong> {project.description}</p>
+        <a href={project.html_url} target="_blank">Link to GitHub</a>
+        <p><strong>Stars:</strong> {project.stargazers_count}</p>
+        <p>{this.addOrRemoveButton(project)}</p>
         <div className="divider"></div>
       </li>
     )

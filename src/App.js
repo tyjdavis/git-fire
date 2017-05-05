@@ -2,6 +2,11 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import ProjectSearchResult from './projectSearchResult';
 import base from './rebase';
+import {
+  BrowserRouter as Router,
+  Route,
+  Link
+} from 'react-router-dom'
 import './App.css';
 
 window.base = base;
@@ -56,11 +61,12 @@ class App extends Component {
 
   loginOrLogoutButton () {
     if (this.state.user.uid) {
-      return <button onClick={this.logout.bind(this)}>Logout</button>
+      return <button className="waves-effect waves-light btn" onClick={this.logout.bind(this)}>Logout</button>
     } else {
-      return <button onClick={this.login.bind(this)}>Login</button>
+      return <button className="waves-effect waves-light btn" onClick={this.login.bind(this)}>Login</button>
     }
   }
+
 
   searchGithubProjects (event) {
     event.preventDefault();
@@ -71,6 +77,7 @@ class App extends Component {
     //{ data: { name: project }})
   }
 
+
   formIfLoggedIn () {
     if (this.state.user.uid) {
       return (
@@ -78,7 +85,7 @@ class App extends Component {
           <input
             placeholder='Favorite GitHub Projects'
             ref={element => this.projectName = element} />
-          <button>Search GitHub Repos</button>
+          <button className="waves-effect waves-light btn">Search GitHub Repos</button>
         </form>
       )
     }
@@ -90,7 +97,7 @@ class App extends Component {
       const projectIds = this.state.projects.map(p => p.id);
       return (
         <div>
-          <h3>{results.total_count} Results</h3>
+          <h6>{results.total_count} Results</h6>
           <ul>
             {results.items.map((project, index) => {
               return <ProjectSearchResult key={index} project={project}
@@ -106,28 +113,47 @@ class App extends Component {
   }
 
   addProject(project){
+    let list = document.querySelector('.Favorites');
+    let projectList = this.state.projects
     const projectData = {name: project.name, id: project.id}
       this.setState({
         projects: this.state.projects.concat(projectData)
       })
-  }
+      return (
+        projectList.map(project=>{
+          let li = document.createElement('li');
+          li.innerHTML = project.name;
+          list.appendChild(li);
+  }))
+}
+
+          // projectList.map(projects => projects.name)
+
 
 
   removeProject(project){
-    let projectId = project.id
+    const projectId = project.id
     let projectData = this.state.projects
 
     this.setState ({
       projects: projectData.filter(object => object.id !== projectId)
-    })}
+    })
+  }
 
 
   render() {
     return (
-      <div className="container">
+      <div>
+        <div className="log">
           {this.loginOrLogoutButton()}
-        {this.formIfLoggedIn()}
-        {this.displaySearchResults()}
+        </div>
+        <ul className="Favorites">Favorites
+          {/* <Route exact path="/albums/:pictures?" component={Pictures}/> */}
+        </ul>
+        <div className="container">
+          {this.formIfLoggedIn()}
+          {this.displaySearchResults()}
+        </div>
       </div>
     );
   }
