@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import Favorites from './Favorites';
+import {$,jQuery} from 'jquery';
+import Details from './Details';
 import Home from './Home'
 import {
   BrowserRouter as Router,
@@ -16,7 +17,7 @@ class App extends Component {
       <Router>
         <div>
           <Route exact path="/" component={Home}/>
-          <Route exact path="/:id" component={Favorites}/>
+          <Route exact path="/:id" component={Details}/>
         </div>
       </Router>
     );

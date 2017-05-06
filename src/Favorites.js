@@ -1,25 +1,28 @@
 import React, { Component } from 'react';
+import $ from 'jquery';
+import {
+  BrowserRouter as Router,
+  Route,
+  Link
+} from 'react-router-dom'
 
-class Favorites extends Component {
+
+
+class Favorites2 extends Component {
 
 
   render () {
-    console.log(this.props.match.params.id)
-
+      const project = this.props.project;
+      const id = this.props.project.id;
+      console.log(this.props.project);
       return (
-        // <li className="section">
-        //   <h5><strong>Name:</strong> {project.name}</h5>
-        //   <br />
-        //   <img className="responsive-img" src={project.owner.avatar_url}/>
-        //   <p><strong>Description:</strong> {project.description}</p>
-        //   <a href={project.html_url} target="_blank">Link to GitHub</a>
-        //   <p><strong>Stars:</strong> {project.stargazers_count}</p>
-        // </li>
-        <div>Test</div>
+        <li className="">
+          <Link to={`${project.id}`}>{project.name}</Link>
+        </li>
       )
-  }
+    }
 }
 
 
 
-export default Favorites;
+export default Favorites2;

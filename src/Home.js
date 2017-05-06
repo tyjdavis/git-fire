@@ -111,19 +111,41 @@ class Home extends Component {
 
   displayFavorited() {
     if(this.state.projects) {
-      const projectName = this.state.projects.map(p => p.name);
+      const results = this.state.projects
+      const projectId = this.state.projects.map(p => p.id);
+      // console.log(projectId);
       return (
         <div>
-          <h5>Favorites</h5>
+          <h6>Favorites</h6>
           <ul>
-            {projectName.map((name, index) =>{
-              return <li key={index}><Link to={name}>{name}</Link></li>
-            })}
+            {results.map((project, index) => {
+              return <Favorites key={index} project={project} />
+            }
+            )}
           </ul>
         </div>
       )
     }
   }
+
+  // displayFavorited() {
+  //   if(this.state.projects) {
+  //     const projectName = this.state.projects.map(p => p.name)
+  //     const projectId = this.state.projects.map(p => p.id);
+  //     // console.log(projectId);
+  //     return (
+  //       <div>
+  //         <h5>Favorites</h5>
+  //         <ul>
+  //           {projectName.map((name, index) =>{
+  //             // console.log(name.id);
+  //             return <li key={index}><Link to={name}>{name}</Link></li>
+  //           })}
+  //         </ul>
+  //       </div>
+  //     )
+  //   }
+  // }
 
   addProject(project){
     let list = document.querySelector('.Favorites');
