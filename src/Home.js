@@ -128,24 +128,6 @@ class Home extends Component {
     }
   }
 
-  // displayFavorited() {
-  //   if(this.state.projects) {
-  //     const projectName = this.state.projects.map(p => p.name)
-  //     const projectId = this.state.projects.map(p => p.id);
-  //     // console.log(projectId);
-  //     return (
-  //       <div>
-  //         <h5>Favorites</h5>
-  //         <ul>
-  //           {projectName.map((name, index) =>{
-  //             // console.log(name.id);
-  //             return <li key={index}><Link to={name}>{name}</Link></li>
-  //           })}
-  //         </ul>
-  //       </div>
-  //     )
-  //   }
-  // }
 
   addProject(project){
     let list = document.querySelector('.Favorites');

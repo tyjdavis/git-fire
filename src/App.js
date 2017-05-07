@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import {$,jQuery} from 'jquery';
 import Details from './Details';
 import Home from './Home'
 import {

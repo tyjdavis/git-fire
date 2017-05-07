@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import $ from 'jquery';
 import {
   BrowserRouter as Router,
   Route,
@@ -8,13 +7,11 @@ import {
 
 
 
-class Favorites2 extends Component {
+class Favorites extends Component {
 
 
   render () {
       const project = this.props.project;
-      const id = this.props.project.id;
-      console.log(this.props.project);
       return (
         <li className="">
           <Link to={`${project.id}`}>{project.name}</Link>
@@ -25,4 +22,4 @@ class Favorites2 extends Component {
 
 
 
-export default Favorites2;
+export default Favorites;
