@@ -3,3 +3,19 @@ img {
   width: 150px;
   border-radius: 5px;
 }
+
+.home a{
+  text-decoration: none;
+  color: white;
+}
+
+.details {
+  border: 2px solid lightgray;
+  border-radius: 5px;
+  padding: 20px;
+}
+
+.favorites {
+  border: 2px solid lightgray;
+  border-radius: 5px;
+}

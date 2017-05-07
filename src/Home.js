@@ -116,7 +116,7 @@ class Home extends Component {
       // console.log(projectId);
       return (
         <div>
-          <h5>Favorites</h5>
+          <h5><strong>Favorites</strong></h5>
           <ul>
             {results.map((project, index) => {
               return <Favorites key={index} project={project} />
@@ -157,10 +157,14 @@ class Home extends Component {
           <div className="log">
             {this.loginOrLogoutButton()}
           </div>
-            {this.displayFavorited()}
-          <div className="container">
-            {this.formIfLoggedIn()}
-            {this.displaySearchResults()}
+          <div className="row">
+            <div className="col s2 favorites">
+              {this.displayFavorited()}
+            </div>
+            <div className="col s10">
+              {this.formIfLoggedIn()}
+              {this.displaySearchResults()}
+            </div>
           </div>
         </div>
     );
