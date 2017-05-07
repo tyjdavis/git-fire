@@ -116,7 +116,7 @@ class Home extends Component {
       // console.log(projectId);
       return (
         <div>
-          <h6>Favorites</h6>
+          <h5>Favorites</h5>
           <ul>
             {results.map((project, index) => {
               return <Favorites key={index} project={project} />
