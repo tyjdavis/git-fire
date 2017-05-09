@@ -16,15 +16,15 @@ window.base = base;
 class Favorites extends Component {
 
 
-constructor () {
-  super();
-  this.state = {
-    users: {},
-    project: [],
-    owner: [],
-    text: []
+  constructor () {
+    super();
+    this.state = {
+      users: {},
+      project: [],
+      owner: [],
+      text: []
+    }
   }
-}
 
   componentDidMount() {
     const projectId = this.props.match.params.id;
@@ -32,29 +32,10 @@ constructor () {
 }
 
 
-addText(){
-  let message = document.getElementById('message').value;
-  base.push(`users/${message}`)
-}
-
-// addText(text){
-//   let message = document.getElementById('message').value;
-//   let textList = this.state.text
-//
-//   const projectData = {text: text}
-//     this.setState({
-//       text: this.state.text.concat(projectData)
-//     })
-// }
-
-
-//  message () {
-//     let messageText = document.getElementById('message').value;
-//     firebase.database().ref('data/').push({
-//       email: email,
-//       text: messageText,
-//     });
-// }
+  addText(){
+    let message = document.getElementById('message').value;
+    base.push(`users/comments`, {data: { text: {message}}})
+  }
 
 
   render() {
